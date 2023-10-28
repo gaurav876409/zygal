@@ -10,7 +10,7 @@
     </div>
 
     <script>
-function drawCharacter() {
+function drawName() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const fontColor = "red"; 
@@ -28,7 +28,7 @@ function drawCharacter() {
     context.fillText("G", centerX, centerY);
 }
 
-function extractAndDownloadPixelData() {
+function download() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
@@ -53,9 +53,9 @@ function extractAndDownloadPixelData() {
     downloadLink.download = 'Output_Character.txt';
 }
 
-drawCharacter();
+drawName();
 
-document.getElementById('downloadLink').addEventListener('click', extractAndDownloadPixelData);
+document.getElementById('downloadLink').addEventListener('click', download);
     </script>
 </body>
 </html>
