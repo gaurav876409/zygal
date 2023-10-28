@@ -1,74 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zygal Assignment</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        #myCanvas {
-            border: 1px solid #000; 
-        }
-    </style>
+    <title>Canvas Image Download</title>
 </head>
-
 <body>
-    <canvas id="myCanvas" width="16" height="34"></canvas>
-    <button id="downloadButton">Download</button>
+    <div id="container">
+        <canvas id="canvas" width="16" height="34"></canvas>
+        <a id="downloadLink" href="#">Download</a>
+    </div>
 
     <script>
-        const canvas = document.getElementById("myCanvas");
-        const ctx = canvas.getContext("2d");
-        const downloadButton = document.getElementById("downloadButton");
+function drawCharacter() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const fontColor = "red"; 
+    const fontFamily = "Arial"; 
+    const fontSize = 20;
 
-        ctx.fillStyle = "rgba(0, 0, 0, 0)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = fontColor;
+    context.font = fontSize + "px " + fontFamily;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
 
-        ctx.font = "20px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
 
-        ctx.fillStyle = "rgba(255, 0, 0, 1)";
+    context.fillText("G", centerX, centerY);
+}
 
-        const fullName = "G";
-        const x = canvas.width / 2;
-        const y = canvas.height / 2;
-        ctx.fillText(fullName, x, y);
+function extractAndDownloadPixelData() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
 
-        function downloadCanvasData() {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            const hexData = [];
+    const pixelDataArray = [];
 
-            for (let i = 0; i < imageData.length; i += 4) {
-                const r = imageData[i].toString(16).padStart(2, '0');
-                const g = imageData[i + 1].toString(16).padStart(2, '0');
-                const b = imageData[i + 2].toString(16).padStart(2, '0');
-                const a = imageData[i + 3].toString(16).padStart(2, '0');
-                const hexColor = `0x${r}${g}${b}${a}`;
-                hexData.push(hexColor);
-            }
-
-            const valuesPerLine = 10;
-            const formattedData = [];
-            for (let i = 0; i < hexData.length; i += valuesPerLine) {
-                formattedData.push(hexData.slice(i, i + valuesPerLine).join(", "));
-            }
-
-            const dataBlob = new Blob([formattedData.join("\n")], { type: "text/plain" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(dataBlob);
-            a.download = "canvas_data.txt";
-            a.click();
+    for (let y = 0; y < canvas.height; y++) {
+        let row = "";
+        for (let x = 0; x < canvas.width; x++) {
+            const pixel = context.getImageData(x, y, 1, 1).data;
+            const hexPixel = '0x' + pixel[0].toString(16).padStart(2, '0') +
+                pixel[1].toString(16).padStart(2, '0') +
+                pixel[2].toString(16).padStart(2, '0') +
+                pixel[3].toString(16).padStart(2, '0');
+            row += hexPixel + ", ";
         }
-        downloadButton.addEventListener("click", downloadCanvasData);
+        pixelDataArray.push(row);
+    }
+
+    const downloadLink = document.getElementById('downloadLink');
+    const data = pixelDataArray.join('\n');
+    downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(data);
+    downloadLink.download = 'Output_Character.txt';
+}
+
+drawCharacter();
+
+document.getElementById('downloadLink').addEventListener('click', extractAndDownloadPixelData);
     </script>
 </body>
-
 </html>
