@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zygal Assignment</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #myCanvas {
+            border: 1px solid #000; 
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="16" height="34"></canvas>
+    <button id="downloadButton">Download</button>
+
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        const downloadButton = document.getElementById("downloadButton");
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.fillStyle = "rgba(255, 0, 0, 1)";
+
+        const fullName = "G";
+        const x = canvas.width / 2;
+        const y = canvas.height / 2;
+        ctx.fillText(fullName, x, y);
+
+        function downloadCanvasData() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const hexData = [];
+
+            for (let i = 0; i < imageData.length; i += 4) {
+                const r = imageData[i].toString(16).padStart(2, '0');
+                const g = imageData[i + 1].toString(16).padStart(2, '0');
+                const b = imageData[i + 2].toString(16).padStart(2, '0');
+                const a = imageData[i + 3].toString(16).padStart(2, '0');
+                const hexColor = `0x${r}${g}${b}${a}`;
+                hexData.push(hexColor);
+            }
+
+            const valuesPerLine = 10;
+            const formattedData = [];
+            for (let i = 0; i < hexData.length; i += valuesPerLine) {
+                formattedData.push(hexData.slice(i, i + valuesPerLine).join(", "));
+            }
+
+            const dataBlob = new Blob([formattedData.join("\n")], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(dataBlob);
+            a.download = "canvas_data.txt";
+            a.click();
+        }
+        downloadButton.addEventListener("click", downloadCanvasData);
+    </script>
+</body>
+
+</html>
